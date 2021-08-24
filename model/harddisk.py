@@ -10,7 +10,7 @@ class Network:
     def add_hardisk(self, host_name, harddisk_data):
         self.cursor.execute(
                 f"""
-                insert into harddisk(
+                insert into monitoring.harddisk(
                     name, mount_point,
                     fs_type, size, 
                     device_id,
@@ -20,7 +20,7 @@ class Network:
                     %(name)s, %(mount_point), %(fs_tye), 
                     %(size), id,
                     now()::timestamp, now()::timestamp
-                from device
+                from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
                 """, {
@@ -40,7 +40,7 @@ class Network:
             f"""
             select 
                 id 
-            from harddisk where
+            from monitoring.harddisk where
             where name = %(name)s
             and deleted_at is null
             """, {
@@ -59,7 +59,7 @@ class Network:
 
         self.cursor.execute(
             f"""
-            update harddisk set deleted_at = (now()::timestamp)
+            update monitoring.harddisk set deleted_at = (now()::timestamp)
             where name = %(name)s;
             """, {"name": harddisk_name}
         )

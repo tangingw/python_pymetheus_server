@@ -10,14 +10,14 @@ class Network:
     def add_network(self, host_name, network_data):
         self.cursor.execute(
                 f"""
-                insert into network_ip(
+                insert into monitoring.network_ip(
                     ip_address, ip_version, device_id,
                     created_at, updated_at
                 )
                 select 
                     %(ip_address)s, %(ip_version), id,
                     now()::timestamp, now()::timestamp
-                from device
+                from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
                 """, {
@@ -35,7 +35,7 @@ class Network:
             f"""
             select 
                 id 
-            from network_ip where
+            from monitoring.network_ip where
             where ip_address = %(ip_address)s
             and deleted_at is null
             """, {
@@ -54,7 +54,7 @@ class Network:
 
         self.cursor.execute(
             f"""
-            update network_ip set deleted_at = (now()::timestamp)
+            update monitoring.network_ip set deleted_at = (now()::timestamp)
             where ip_address = %(ip_address)s;
             """, {"ip_address": ip_address}
         )

@@ -10,7 +10,7 @@ class Event:
     def add_event(self, monitoring_type, foreign_key_table_name, foreign_key_id, event_data):
         self.cursor.execute(
                 f"""
-                insert into monitor_event(
+                insert into monitoring.monitor_event(
                     event_value, event_message,
                     event_status, fk_table, fk_id,
                     monitor_type_id,
@@ -21,7 +21,7 @@ class Event:
                     %(event_status)s, %(fk_table)s, 
                     %(fk_id)s, id,
                     now()::timestamp
-                from monitor_type
+                from monitoring.monitor_type
                 where type_name = %(monitoring_type)s
                 """, {
                     "event_value": event_data["event_value"],
@@ -42,7 +42,7 @@ class Event:
             select 
                 event_value, event_message, event_status,
                 monitor_type_id
-            from monitoring_event where
+            from monitoring.monitoring_event where
             where fk_table = %(fk_table)s
             and fk_id = %(fk_id)s
             and deleted_at is null

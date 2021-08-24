@@ -11,7 +11,7 @@ class Device:
 
         self.cursor.execute(
             f"""
-            insert into device(
+            insert into monitoring.device(
                 host_name, cpu, memory,
                 os_install, created_at,
                 updated_at
@@ -35,7 +35,7 @@ class Device:
             f"""
             select 
                 id 
-            from device where
+            from monitoring.device where
             where host_name = %(host_name)s
             and deleted_at is null
             """, {
@@ -54,7 +54,7 @@ class Device:
 
         self.cursor.execute(
             f"""
-            update device set deleted_at = (now()::timestamp)
+            update monitoring.device set deleted_at = (now()::timestamp)
             where host_name = %(host_name)s;
             """, {"host_name": host_name}
         )
