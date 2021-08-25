@@ -46,7 +46,7 @@ def check_device_register(device_id=None):
         return jsonify(
             {
                 "status_code": 200,
-                "status_msg": f"This is my device:{device_id}"
+                "message": f"This is my device:{device_id}"
             }
         )
     
