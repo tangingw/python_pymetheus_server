@@ -56,12 +56,12 @@ class Service:
             header[i]: r for i, r in enumerate(result) 
         } if result else None
     
-    def delete_network(self, service_name):
+    def delete_service(self, service_name):
 
         self.cursor.execute(
             f"""
             update monitoring.service set deleted_at = (now()::timestamp)
-            where service_name = %(service_name)s;
+            where service_name = %(service_name)s and deleted_at is null;
             """, {"service_name": service_name}
         )
 
