@@ -55,7 +55,7 @@ class Device:
         self.cursor.execute(
             f"""
             update monitoring.device set deleted_at = (now()::timestamp)
-            where host_name = %(host_name)s;
+            where host_name = %(host_name)s and deleted_at is null;
             """, {"host_name": host_name}
         )
 

@@ -60,7 +60,7 @@ class Network:
         self.cursor.execute(
             f"""
             update monitoring.harddisk set deleted_at = (now()::timestamp)
-            where name = %(name)s;
+            where name = %(name)s and deleted_at is null;
             """, {"name": harddisk_name}
         )
 

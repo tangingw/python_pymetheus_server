@@ -56,7 +56,8 @@ class Port:
         self.cursor.execute(
             f"""
             update monitoring.network_port set deleted_at = (now()::timestamp)
-            where port = %(port_num)s;
+            where port = %(port_num)s
+            and deleted_at is null;
             """, {"port_num": port_num}
         )
 

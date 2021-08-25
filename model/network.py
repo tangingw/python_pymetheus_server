@@ -55,7 +55,9 @@ class Network:
         self.cursor.execute(
             f"""
             update monitoring.network_ip set deleted_at = (now()::timestamp)
-            where ip_address = %(ip_address)s;
+            where ip_address = %(ip_address)s
+            and deleted_at is null
+            ;
             """, {"ip_address": ip_address}
         )
 
