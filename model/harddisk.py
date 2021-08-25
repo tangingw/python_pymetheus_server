@@ -1,6 +1,6 @@
 
 
-class Network:
+class Harddisk:
 
     def __init__(self, connection):
 
