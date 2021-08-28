@@ -10,7 +10,7 @@ class Port:
     def add_port(self, network_ip, port_data):
         self.cursor.execute(
                 f"""
-                insert into monitoring.network_port(
+                insert into monitoring.port(
                     port, port_desc, device_id, network_id
                     created_at, updated_at
                 )
@@ -36,7 +36,7 @@ class Port:
             f"""
             select 
                 id 
-            from monitoring.network_port where
+            from monitoring.port where
             where port = %(port_num)s
             and deleted_at is null
             """, {
@@ -55,7 +55,7 @@ class Port:
 
         self.cursor.execute(
             f"""
-            update monitoring.network_port set deleted_at = (now()::timestamp)
+            update monitoring.port set deleted_at = (now()::timestamp)
             where port = %(port_num)s
             and deleted_at is null;
             """, {"port_num": port_num}
