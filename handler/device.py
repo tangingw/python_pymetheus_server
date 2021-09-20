@@ -4,18 +4,19 @@ from model.network import Network
 from model.port import Port
 from model.service import Service
 from model.device_service import DeviceService
-from model.network_service import NetworkService
 from model.network_port import NetworkPort
 
 
 class DeviceRegisterHandler:
 
-    def __init__(self):
-        self.device = Device()
-        self.harddisk = Harddisk()
-        self.network = Network()
-        self.port = Port()
-        self.service = Service()
+    def __init__(self, db_conn):
+        self.db_conn = db_conn
+        self.device = Device(self.db_conn)
+        self.harddisk = Harddisk(self.db_conn)
+        self.network = Network(self.db_conn)
+        self.port = Port(self.db_conn)
+        self.service = Service(self.db_conn)
+        self.network_port = NetworkPort(self.db_conn)
 
     def _add_device(self, device_data: dict) -> None:
 
@@ -33,10 +34,20 @@ class DeviceRegisterHandler:
 
             self.harddisk.add_hardisk(host_name, harddisk_item)
 
-    def _add_port(self, network_ip, port_data: list) -> None:
+    def _add_port(self, port_data) -> None:
         #How do we deal with 1 IP with multiple ports?
-        self.port.add_port(network_ip, port_data)
+        self.port.add_port(port_data)
     
+    def _add_network_port(self, network_ip, port_list):
+
+        for port_data in port_list:
+
+            self._add_port(port_data)
+            self.network_port.add_network_port(
+                self.network.get_network_id(network_ip),
+                self.port.get_port_id(port_data["port"])
+            )
+
     def _add_service(self, port_num, service_data: dict) -> None:
 
         self.service.add_service(port_num, service_data)

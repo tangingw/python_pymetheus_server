@@ -88,7 +88,7 @@ class ServiceType(DBCursor):
 
         self.cursor.commit()
     
-    def get_service_id(self, service_type):
+    def get_servicetype_id(self, service_type):
 
         self.cursor.execute(
             f"""

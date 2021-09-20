@@ -29,29 +29,6 @@ class NetworkService(DBCursor):
     
         self.cursor.commit()
 
-    def get_service_id(self, service_name):
-
-        self.cursor.execute(
-            f"""
-            select 
-                id 
-            from monitoring.network_service where
-            where service_id = %(service_id)s
-            and deleted_at is null
-            """, {
-                "service_id": self.service.get_service_id(service_name)["id"]
-            }
-        )
-
-        header = [x[0] for x in self.cursor.description]
-        results = self.cursor.fetchall()
-
-        return [
-            {
-                header[i]: r for i, r in enumerate(result) 
-            } for result in results
-        ]   if results else None
-    
     def delete_service(self, service_name, ip_address):
 
         self.cursor.execute(

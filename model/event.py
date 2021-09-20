@@ -22,7 +22,7 @@ class Event(DBCursor):
                 %(fk_id)s, id,
                 now()::timestamp
             from monitoring.event_type
-            where type_name = %(monitoring_type)s
+            where type_name = %(event_type)s
             """, {
                 "event_value": event_data["event_value"],
                 "event_message": event_data["event_message"],
