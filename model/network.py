@@ -1,16 +1,16 @@
+from template import DBCursor
 
 
 class Network:
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        super().__init__(connection=connection)
 
     def add_network(self, host_name, network_data):
         self.cursor.execute(
                 f"""
-                insert into monitoring.network_ip(
+                insert into monitoring.network(
                     ip_address, ip_version, device_id,
                     created_at, updated_at
                 )
@@ -20,6 +20,7 @@ class Network:
                 from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
+                on conflict(ip_address) do nothing
                 """, {
                     "ip_address": network_data["ip_address"],
                     "ip_version": network_data["ip_version"],

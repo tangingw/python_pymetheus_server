@@ -1,11 +1,11 @@
+from template import DBCursor
 
 
-class Harddisk:
+class Harddisk(DBCursor):
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        super().__init__(connection=connection)
 
     def add_hardisk(self, host_name, harddisk_data):
         self.cursor.execute(
@@ -23,6 +23,7 @@ class Harddisk:
                 from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
+                on conflict(device_id) do nothing
                 """, {
                     "name": harddisk_data["name"],
                     "mount_point": harddisk_data["mount_point"],

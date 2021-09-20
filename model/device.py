@@ -1,12 +1,12 @@
+from template import DBCursor
 
 
-class Device:
+class Device(DBCursor):
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
-    
+        super().__init__(connection=connection)
+            
     def insert_device(self, device_data):
 
         self.cursor.execute(
@@ -19,7 +19,7 @@ class Device:
                 %(host_name)s, %(cpu)s, %(memory)s,
                 %(os_install), now()::timestamp,
                 now()::timestamp
-            )
+            ) on conflict (host_name) do nothing
             """, {
                 "host_name": device_data["host_name"],
                 "cpu": device_data["cpu"], "memory": device_data["memory"],

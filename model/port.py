@@ -1,26 +1,20 @@
+from template import DBCursor
 
 
-class Port:
+class Port(DBCursor):
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        super().__init__(connection=connection)
 
     def add_port(self, network_ip, port_data):
         self.cursor.execute(
                 f"""
                 insert into monitoring.port(
-                    port, port_desc, device_id, network_id
+                    port, port_desc
                     created_at, updated_at
                 )
-                select 
-                    %(port)s, %(port_desc)s, 
-                    n.device_id, n.id,
-                    now()::timestamp, now()::timestamp
-                from monitoring.network_ip n
-                and n.deleted_at is null
-                and n.ip_address = %(network_ip)s
+                on conflict(port)
                 """, {
                     "port": port_data["port"],
                     "ip_version": port_data["port_desc"],

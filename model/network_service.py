@@ -1,13 +1,14 @@
 from model.network import Network
 from model.service import Service
+from template import DBCursor
 
 
-class DeviceService:
+class NetworkService(DBCursor):
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        super().__init__(connection=connection)
+
         self.service = Service(self.connection)
         self.network = Network(self.connection)
 
@@ -18,11 +19,11 @@ class DeviceService:
                     service_id, device_id
                 )
                 values (
-                    %(service_id)s, %(device_id)s
-                )
+                    %(service_id)s, %(network_id)s
+                ) on conflict (service_id, device_id) do nothing
                 """, {
                     "service_id": self.service.get_service_id(service_name)["id"],
-                    "device_id": self.network.get_network_id(ip_address)["id"]
+                    "network_id": self.network.get_network_id(ip_address)["id"]
                 }
             )
     

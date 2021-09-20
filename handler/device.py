@@ -3,6 +3,9 @@ from model.harddisk import Harddisk
 from model.network import Network
 from model.port import Port
 from model.service import Service
+from model.device_service import DeviceService
+from model.network_service import NetworkService
+from model.network_port import NetworkPort
 
 
 class DeviceRegisterHandler:

@@ -1,13 +1,13 @@
 from network import Network
 from port import Port
+from template import DBCursor
 
 
-class NetworkPort:
+class NetworkPort(DBCursor):
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        super().__init__(connection=connection)
         self.port = Port(self.connection)
         self.network = Network(connection)
 
@@ -22,6 +22,7 @@ class NetworkPort:
                 values (
                     %(port_id)s, %(network_id)s
                 )
+                on conflict(port_id, network_id) do nothing
                 """, {
                     "port_id": self.port.get_port_id(port_num)["id"],
                     "network_id": self.network.get_network_id(network_ip)["id"]
