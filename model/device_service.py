@@ -16,10 +16,12 @@ class DeviceService(DBCursor):
         self.cursor.execute(
                 f"""
                 insert into monitoring.device_service(
-                    service_id, device_id
+                    service_id, device_id,
+                    created_at, updated_at
                 )
                 values (
-                    %(service_id)s, %(device_id)s
+                    %(service_id)s, %(device_id)s,
+                    now()::timestamp, now()::timestamp
                 ) on conflict(service_id, device_id) do nothing
                 """, {
                     "service_id": self.service.get_service_id(service_name)["id"],

@@ -7,18 +7,20 @@ class Port(DBCursor):
 
         super().__init__(connection=connection)
 
-    def add_port(self, network_ip, port_data):
+    def add_port(self, port_data):
         self.cursor.execute(
                 f"""
                 insert into monitoring.port(
-                    port, port_desc
+                    port, port_desc,
                     created_at, updated_at
+                ) values(
+                    %(port)s, %(port_desc)s,
+                    now()::timestamp, now()::timestamp
                 )
                 on conflict(port)
                 """, {
                     "port": port_data["port"],
-                    "ip_version": port_data["port_desc"],
-                    "network_ip": network_ip
+                    "port_desc": port_data["port_desc"]
                 }
             )
         

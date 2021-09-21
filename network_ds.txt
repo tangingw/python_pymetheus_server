@@ -1,0 +1,30 @@
+{
+    'Ethernet': [
+    {'ip_type': 'mac-address', 'mac_address': '74-78-27-70-85-DC', 'ip_address': None, 'netmask': None, 'broadcast': None}, 
+    {'ip_type': 'ipv4', 'mac_address': None, 'ip_address': '169.254.22.29', 'netmask': '255.255.0.0', 'broadcast': None}
+    ], 
+    'Local Area Connection 1': [
+        {'ip_type': 'mac-address', 'mac_address': 'E8-F4-08-70-2B-E7', 'ip_address': None, 'netmask': None, 'broadcast': None}, 
+        {'ip_type': 'ipv4', 'mac_address': None, 'ip_address': '169.254.222.19', 'netmask': '255.255.0.0', 'broadcast': None}, 
+        {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': 'fe80::7999:833a:f6d2:de13', 'netmask': None, 'broadcast': None}
+    ], 
+    'Local Area Connection 2': [
+        {'ip_type': 'mac-address', 'mac_address': 'EA-F4-08-70-2B-E6', 'ip_address': None, 'netmask': None, 'broadcast': None}, 
+        {'ip_type': 'ipv4', 'mac_address': None, 'ip_address': '169.254.118.93', 'netmask': '255.255.0.0', 'broadcast': None}, 
+        {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': 'fe80::8506:fbab:8394:765d', 'netmask': None, 'broadcast': None}
+    ], 
+    'Wi-Fi': [
+        {'ip_type': 'mac-address', 'mac_address': 'E8-F4-08-70-2B-E6', 'ip_address': None, 'netmask': None, 'broadcast': None}, 
+        {'ip_type': 'ipv4', 'mac_address': None, 'ip_address': '192.168.0.114', 'netmask': '255.255.255.0', 'broadcast': None}
+    ], 
+    'Bluetooth Network Connection': [
+        {'ip_type': 'mac-address', 'mac_address': 'E8-F4-08-70-2B-EA', 'ip_address': None, 'netmask': None, 'broadcast': None}, 
+        {'ip_type': 'ipv4', 'mac_address': None, 'ip_address': '169.254.59.201', 'netmask': '255.255.0.0', 'broadcast': None}, 
+        {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': 'fe80::2dc6:4a07:d259:3bc9', 'netmask': None, 'broadcast': None}], 
+    'Microsoft IP-HTTPS Platform Interface': [
+        {'ip_type': 'mac-address', 'mac_address': '00-00-00-00-00-00-00-E0', 'ip_address': None, 'netmask': None, 'broadcast': None}, 
+        {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': '2002:aafb:d2da:1013:1c82:ebe1:614d:7dfb', 'netmask': None, 'broadcast': None}, 
+        {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': '2002:aafb:d2da:1013:ecc2:5993:f175:ecae', 'netmask': None, 'broadcast': None}, {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': 'fe80::1c82:ebe1:614d:7dfb', 'netmask': None, 'broadcast': None}], 'Loopback Pseudo-Interface 1': [{'ip_type': 'ipv4', 'mac_address': None, 'ip_address': '127.0.0.1', 'netmask': '255.0.0.0', 'broadcast': None},
+        {'ip_type': 'ipv6', 'mac_address': None, 'ip_address': '::1', 'netmask': None, 'broadcast': None}
+    ]
+}

@@ -1,5 +1,8 @@
 from flask import Flask, request
 from flask import jsonify, abort
+from handler.device import DeviceRegisterHandler
+from handler.event import EventHandler
+from db.connector import get_connection
 
 
 app = Flask(__name__)
@@ -32,21 +35,29 @@ def return_index():
 
 
 @app.route("/register", methods=["GET", "POST"])
-@app.route("/register/<device_id>")
-def check_device_register(device_id=None):
+@app.route("/register/<device_name>")
+def check_device_register(device_name=None):
+
+    db_conn = get_connection("config")
+    register_handler = DeviceRegisterHandler(db_conn)
 
     if request.method == "POST" and request.is_json:
 
         #Add the device into postgresql database
+        register_handler.add_register(request.get_json())
+        db_conn.close()       
         return jsonify(request.get_json())
     
-    if device_id:
-    
-        #Add the postgresql database to check the device
+    if device_name:
+        device_id = register_handler.get_device(device_name)
+
         return jsonify(
             {
                 "status_code": 200,
-                "message": f"This is my device:{device_id}"
+                "message": {
+                    "device_name": device_name,
+                    "device_id": device_id
+                }
             }
         )
     
@@ -56,8 +67,13 @@ def check_device_register(device_id=None):
 @app.route("/collect", methods=["GET", "POST"])
 def collect_event():
 
-    if request.method == "POST":
+    if request.method == "POST" and request.is_json:
         #Insert the data into monitor event
+        db_conn = get_connection("config")
+
+        event_handler = EventHandler(db_conn)
+        event_handler.add_current_event(request.json())
+        
         return jsonify(
             {
                 "status": 200,
