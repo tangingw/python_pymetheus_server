@@ -4,6 +4,7 @@ from model.network import Network
 from model.port import Port
 from model.service import Service
 from model.device_service import DeviceService
+from model.device_network import DeviceNetwork
 from model.network_port import NetworkPort
 
 
@@ -17,16 +18,16 @@ class DeviceRegisterHandler:
         self.port = Port(self.db_conn)
         self.service = Service(self.db_conn)
         self.network_port = NetworkPort(self.db_conn)
+        self.device_service = DeviceService(self.db_conn)
+        self.device_network = DeviceNetwork(self.db_conn)
 
     def _add_device(self, device_data: dict) -> None:
 
         self.device.insert_device(device_data)
 
-    def _add_network(self, host_name, network_data: list) -> None:
+    def _add_network(self, network_data) -> None:
 
-        for network_item in network_data:
-
-            self.network.add_network(host_name, network_item)
+        self.network.add_network(network_data)
     
     def _add_harddisk(self, host_name, harddisk_data: list) -> None:
 
@@ -35,7 +36,7 @@ class DeviceRegisterHandler:
             self.harddisk.add_hardisk(host_name, harddisk_item)
 
     def _add_port(self, port_data) -> None:
-        #How do we deal with 1 IP with multiple ports?
+        
         self.port.add_port(port_data)
     
     def _add_network_port(self, network_ip, port_list):
@@ -48,9 +49,29 @@ class DeviceRegisterHandler:
                 self.port.get_port_id(port_data["port"])
             )
 
+    def _add_device_network(self, host_name, network_data_list):
+
+        for network_data in network_data_list:
+            
+            self._add_network(network_data)
+            self.device_network.add_device_network(
+                self.device.get_device_id(host_name),
+                self.network.get_network_id(network_data["ip_address"])
+            )
+
     def _add_service(self, port_num, service_data: dict) -> None:
 
         self.service.add_service(port_num, service_data)
+
+    def _add_device_service(self, host_name, service_data_list):
+
+        for service_data in service_data_list:
+
+            self._add_service(service_data["port"], service_data)
+            self._add_device_service(
+                self.device.get_device_id(host_name),
+                self.service.get_service_id(service_data["service_name"])
+            )
 
     def add_device(self, device_data_from_client: dict) -> None:
 
@@ -65,13 +86,6 @@ class DeviceRegisterHandler:
         self._add_harddisk(
             host_name, device_data_from_client["harddisk"]
         )
-
-        self._add_network(
-            host_name, device_data_from_client["network"]
-        )
-
-        for service_data in device_data_from_client["service"]:
-            self._add_service(service_data["port"], service_data)
 
     def get_device(self, host_name):
 

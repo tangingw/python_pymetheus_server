@@ -1,29 +1,24 @@
-from model.network import Network
-from model.service import Service
 from template import DBCursor
 
 
-class NetworkService(DBCursor):
+class DeviceNetwork(DBCursor):
 
     def __init__(self, connection):
 
         super().__init__(connection=connection)
 
-        self.service = Service(self.connection)
-        self.network = Network(self.connection)
-
-    def add_network_service(self, ip_address, service_name):
+    def add_device_network(self, device_id, network_id):
         self.cursor.execute(
                 f"""
-                insert into monitoring.device_service(
+                insert into monitoring.device_network(
                     service_id, device_id
                 )
                 values (
                     %(service_id)s, %(network_id)s
                 ) on conflict (service_id, device_id) do nothing
                 """, {
-                    "service_id": self.service.get_service_id(service_name)["id"],
-                    "network_id": self.network.get_network_id(ip_address)["id"]
+                    "device_id": device_id,
+                    "network_id": network_id
                 }
             )
     

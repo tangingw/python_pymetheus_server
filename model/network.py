@@ -7,24 +7,20 @@ class Network:
 
         super().__init__(connection=connection)
 
-    def add_network(self, host_name, network_data):
+    def add_network(self, network_data):
         self.cursor.execute(
                 f"""
                 insert into monitoring.network(
-                    ip_address, ip_version, device_id,
+                    ip_address, ip_version
                     created_at, updated_at
-                )
-                select 
-                    %(ip_address)s, %(ip_version), id,
+                ) values(
+                    %(ip_address)s, %(ip_version),
                     now()::timestamp, now()::timestamp
-                from monitoring.device
-                where deleted_at is null
-                and host_name = %(host_name)s
+                )
                 on conflict(ip_address) do nothing
                 """, {
                     "ip_address": network_data["ip_address"],
-                    "ip_version": network_data["ip_version"],
-                    "host_name": host_name
+                    "ip_version": network_data["ip_version"]
                 }
             )
         
