@@ -22,7 +22,7 @@ class EventHandler:
             f"get_{table_name}_id"
         )(item_name)
 
-    def add_current_event(self, event_data):
+    def add_current_event(self, event_type, monitoring_type, monitoring_name, event_data):
 
         for key in event_data.keys():
 
@@ -30,10 +30,7 @@ class EventHandler:
         
         #How to get the fk_id?
         self.event.add_event(
-            event_data["monitoring_type"], event_data["item_monitored"]["item_type"],
-            self.get_model_id(
-                event_data["item_monitored"]["item_type"], 
-                event_data["item_monitored"]["item_name"]
-            ),
+            event_type, monitoring_type,
+            self.get_model_id(monitoring_type, monitoring_name),
             self.event_ds
         )
