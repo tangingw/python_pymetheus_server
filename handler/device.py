@@ -4,10 +4,6 @@ from model.network import Network
 from model.port import Port
 from model.service import Service
 from model.device_service import DeviceService
-<<<<<<< HEAD
-=======
-from model.device_network import DeviceNetwork
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
 from model.network_port import NetworkPort
 from model.interface import Interface
 from model.network_interface import NetworkInterface
@@ -23,11 +19,8 @@ class DeviceRegisterHandler:
         self.network = Network(self.db_conn)
         self.port = Port(self.db_conn)
         self.service = Service(self.db_conn)
-<<<<<<< HEAD
         self.interface = Interface(self.db_conn)
         self.network_interface = NetworkInterface(self.db_conn)
-=======
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
         self.network_port = NetworkPort(self.db_conn)
         self.device_service = DeviceService(self.db_conn)
         self.device_network = DeviceNetwork(self.db_conn)
@@ -36,17 +29,11 @@ class DeviceRegisterHandler:
 
         self.device.insert_device(device_data)
 
-<<<<<<< HEAD
     def _add_network(self, network_data: list) -> None:
 
         for network_item in network_data:
 
             self.network.add_network(network_item)
-=======
-    def _add_network(self, network_data) -> None:
-
-        self.network.add_network(network_data)
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
     
     def _add_harddisk(self, host_name, harddisk_data: list) -> None:
 
@@ -54,13 +41,8 @@ class DeviceRegisterHandler:
 
             self.harddisk.add_hardisk(host_name, harddisk_item)
 
-<<<<<<< HEAD
     def _add_port(self, port_data: list) -> None:
         #How do we deal with 1 IP with multiple ports?
-=======
-    def _add_port(self, port_data) -> None:
-        
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
         self.port.add_port(port_data)
     
     def _add_network_port(self, network_ip, port_list):
@@ -87,21 +69,7 @@ class DeviceRegisterHandler:
 
         self.service.add_service(port_num, service_data)
 
-<<<<<<< HEAD
     def _add_interface(self, interface_data: dict) -> None:
-=======
-    def _add_device_service(self, host_name, service_data_list):
-
-        for service_data in service_data_list:
-
-            self._add_service(service_data["port"], service_data)
-            self._add_device_service(
-                self.device.get_device_id(host_name),
-                self.service.get_service_id(service_data["service_name"])
-            )
-
-    def add_device(self, device_data_from_client: dict) -> None:
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
 
         self.interface.add_interface(interface_data)
 
@@ -119,7 +87,6 @@ class DeviceRegisterHandler:
             host_name, client_device_data["harddisk"]
         )
 
-<<<<<<< HEAD
         mac_address_temp = None
 
         for interface, interface_data in client_device_data["network"].items():
@@ -161,8 +128,6 @@ class DeviceRegisterHandler:
             self._add_service(service_data["port"], service_data)
             self.device_service.add_device_service(host_name, service_data["service_name"])
 
-=======
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
     def get_device(self, host_name):
 
         return self.device.get_device_id(host_name)
