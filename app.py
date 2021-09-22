@@ -72,7 +72,17 @@ def collect_event():
         db_conn = get_connection("config")
 
         event_handler = EventHandler(db_conn)
-        event_handler.add_current_event(request.json())
+        received_event = request.get_json()
+
+        event_handler.add_current_event(
+            received_event["event_type"], received_event["monitor_type"], 
+            received_event["monitor_type_name"], {
+                "event_type": received_event["event_type"], 
+                "event_status": received_event["event_status"],
+                "event_message": received_event["event_message"],
+                "event_value": received_event["event_value"]
+            }
+        )
         
         return jsonify(
             {

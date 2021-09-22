@@ -8,6 +8,7 @@ class Event(DBCursor):
         super().__init__(connection=connection)
 
     def add_event(self, event_type, monitoring_type, monitoring_type_id, event_data):
+        print(event_type, monitoring_type, monitoring_type_id, event_data)
         self.cursor.execute(
             f"""
             insert into monitoring.monitor_event(
@@ -18,8 +19,8 @@ class Event(DBCursor):
             )
             select 
                 %(event_value)s, %(event_message)s,
-                %(event_status)s, %(monitoring_type)s, 
-                %(monitoring_type_id)s, id,
+                %(event_status)s, id, %(monitoring_type)s, 
+                %(monitoring_type_id)s,
                 now()::timestamp
             from monitoring.event_type
             where type_name = %(event_type)s
@@ -83,9 +84,8 @@ class EventType(DBCursor):
             where not exists (
                 select 
                     id 
-                from monitoring.event_type where
-                where type_name = %(monitor_type)s
-                and deleted_at is null
+                from monitoring.event_type
+                where type_name = %(event_type)s
             )
             """, {
                 "event_type": event_type
