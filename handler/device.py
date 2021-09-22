@@ -27,10 +27,10 @@ class DeviceRegisterHandler:
 
     def _add_device(self, device_data: dict) -> None:
 
-        device_id = self.device.get_device_id(device_data["host_name"])
+        #device_id = self.device.get_device_id(device_data["host_name"])
         
-        if not device_id:
-            self.device.insert_device(device_data)
+        #if not device_id:
+        self.device.insert_device(device_data)
 
     def _add_network(self, network_data: dict) -> None:
 

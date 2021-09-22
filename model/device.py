@@ -15,10 +15,14 @@ class Device(DBCursor):
                 host_name, cpu, memory,
                 os_install, created_at,
                 updated_at
-            ) values (
+            ) select
                 %(host_name)s, %(cpu)s, %(memory)s,
                 %(os_install)s, now()::timestamp,
                 now()::timestamp
+            from device where not exists (
+                select id from device
+                where deleted_at is null
+                and host_name = %(host_name)s
             )
             """, {
                 "host_name": device_data["host_name"],
