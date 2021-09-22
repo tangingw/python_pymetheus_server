@@ -109,12 +109,7 @@ class DeviceRegisterHandler:
             for interface_d in interface_data:
                 
                 if interface_d["mac_address"]:
-
-                    if interface_d["ip_address"] == "127.0.0.1":
-                        mac_address_temp = "00:00:00:00:00:00"
-
-                    else:
-                        mac_address_temp = interface_d["mac_address"]
+                    mac_address_temp = interface_d["mac_address"]
                     
                     self._add_interface(
                         {
@@ -124,6 +119,18 @@ class DeviceRegisterHandler:
                     )
 
                 else:
+
+                    if interface_d["ip_address"] == "127.0.0.1" and (not interface_d["mac_address"]):
+
+                        mac_address_temp = "00:00:00:00:00:00"
+
+                        self._add_interface(
+                            {
+                                "interface_name": interface,
+                                "mac_address": mac_address_temp
+                            }
+                        )
+
                     self._add_network(
                         {
                             "ip_address": interface_d["ip_address"],
