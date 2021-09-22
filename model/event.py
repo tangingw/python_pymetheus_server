@@ -18,8 +18,8 @@ class Event(DBCursor):
             )
             select 
                 %(event_value)s, %(event_message)s,
-                %(event_status)s, %(fk_table)s, 
-                %(fk_id)s, id,
+                %(event_status)s, %(monitoring_type)s, 
+                %(monitoring_type_id)s, id,
                 now()::timestamp
             from monitoring.event_type
             where type_name = %(event_type)s
@@ -43,10 +43,12 @@ class Event(DBCursor):
                 m.event_value, m.event_message, m.event_status,
                 e.type_name, m.monitoring_type, 
                 m.monitoring_type_id
-            from monitoring.monitoring_event m 
-            join event_type e 
+            from 
+                monitoring.monitoring_event m 
+            join 
+                monitoring.event_type e 
             on m.event_type_id = e.id 
-            where m.monitoring_type = %(fk_table)s
+            where m.event_type = %(fk_table)s
             and m.monitoring_type_id = %(fk_id)s
             and deleted_at is null
             """, {
@@ -65,29 +67,28 @@ class Event(DBCursor):
         ] if result_list else None
 
 
-class MonitorType:
+class EventType(DBCursor):
 
     def __init__(self, connection):
 
-        self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        super().__init__(connection=connection)
     
-    def add_monitor_type(self, monitor_type):
+    def add_event_type(self, event_type):
 
         self.cursor.execute(
             f"""
-            insert into monitor_type(type_name)
+            insert into monitoring.event_type(type_name)
             select 
-                %(monitor_type)s
+                %(event_type)s
             where not exists (
                 select 
                     id 
-                from monitoring.monitor_type where
+                from monitoring.event_type where
                 where type_name = %(monitor_type)s
                 and deleted_at is null
             )
             """, {
-                "monitor_type": monitor_type
+                "event_type": event_type
             }
         )
 
@@ -99,7 +100,7 @@ class MonitorType:
             f"""
             select 
                 id 
-            from monitoring.monitor_type where
+            from monitoring.event_type where
             where type_name = %(monitor_type)s
             and deleted_at is null
             """, {
