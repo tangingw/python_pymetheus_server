@@ -11,26 +11,30 @@ class NetworkInterface(DBCursor):
 
     def add_network_interface(self, network_id, interface_id):
 
-        ns_id = self.get_network_interface_id(network_id, interface_id)
-
-        if not ns_id:
-            self.cursor.execute(
-                    f"""
-                    insert into monitoring.network_interface(
-                        network_id, interface_id,
-                        created_at, updated_at
-                    )
-                    values (
-                        %(network_id)s, %(interface_id)s,
-                        now()::timestamp, now()::timestamp
-                    )
-                    """, {
-                        "interface_id": interface_id,
-                        "network_id": network_id                
-                    }
-                )
+        self.cursor.execute(
+            f"""
+            insert into monitoring.network_interface(
+                network_id, interface_id,
+                created_at, updated_at
+            )
+            select
+                %(network_id)s, %(interface_id)s,
+                now()::timestamp, now()::timestamp
+            where not exists(
+                select
+                    id
+                from monitoring.network_interface
+                where deleted_at is null
+                and network_id = %(network_id)s
+                and interface_id = %(interface_id)s
+            )
+            """, {
+                "interface_id": interface_id,
+                "network_id": network_id                
+            }
+        )
         
-            self.connection.commit()
+        self.connection.commit()
 
     def get_network_interface_id(self, network_id, interface_id):
 

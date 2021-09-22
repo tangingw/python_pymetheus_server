@@ -41,7 +41,8 @@ class Event(DBCursor):
             f"""
             select 
                 m.event_value, m.event_message, m.event_status,
-                e.type_name
+                e.type_name, m.monitoring_type, 
+                m.monitoring_type_id
             from monitoring.monitoring_event m 
             join event_type e 
             on m.event_type_id = e.id 
@@ -76,7 +77,15 @@ class MonitorType:
         self.cursor.execute(
             f"""
             insert into monitor_type(type_name)
-            values (%(monitor_type)s)
+            select 
+                %(monitor_type)s
+            where not exists (
+                select 
+                    id 
+                from monitoring.monitor_type where
+                where type_name = %(monitor_type)s
+                and deleted_at is null
+            )
             """, {
                 "monitor_type": monitor_type
             }

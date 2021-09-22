@@ -13,9 +13,15 @@ class Port(DBCursor):
                 insert into monitoring.port(
                     port, port_desc,
                     created_at, updated_at
-                ) values(
+                ) select
                     %(port)s, %(port_desc)s,
                     now()::timestamp, now()::timestamp
+                where not exists(
+                    select 
+                        id 
+                    from monitoring.port where
+                    where port = %(port_num)s
+                    and deleted_at is null
                 )
                 """, {
                     "port": port_data["port"],

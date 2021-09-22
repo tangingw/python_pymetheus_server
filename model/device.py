@@ -19,8 +19,8 @@ class Device(DBCursor):
                 %(host_name)s, %(cpu)s, %(memory)s,
                 %(os_install)s, now()::timestamp,
                 now()::timestamp
-            from device where not exists (
-                select id from device
+            from monitoring.device where not exists (
+                select id from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
             )

@@ -10,26 +10,30 @@ class DeviceService(DBCursor):
 
     def add_device_service(self, device_id, service_id):
 
-        ds_id = self.get_device_service_id(device_id, service_id)
-
-        if not ds_id:
-            self.cursor.execute(
-                    f"""
-                    insert into monitoring.device_service(
-                        service_id, device_id,
-                        created_at, updated_at
-                    )
-                    values (
-                        %(service_id)s, %(device_id)s,
-                        now()::timestamp, now()::timestamp
-                    )
-                    """, {
-                        "service_id": service_id,
-                        "device_id": device_id
-                    }
+        self.cursor.execute(
+                f"""
+                insert into monitoring.device_service(
+                    service_id, device_id,
+                    created_at, updated_at
                 )
-        
-            self.connection.commit()
+                select
+                    %(service_id)s, %(device_id)s,
+                    now()::timestamp, now()::timestamp
+                where not exists (
+                    select
+                        id
+                    from monitoring.device_service
+                    where deleted_at is null
+                    and device_id = %(device_id)s
+                    and service_id = %(service_id)s
+                )
+                """, {
+                    "service_id": service_id,
+                    "device_id": device_id
+                }
+            )
+    
+        self.connection.commit()
     
     def get_device_service_id(self, device_id, service_id):
 

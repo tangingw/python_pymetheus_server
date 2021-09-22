@@ -24,6 +24,13 @@ class Service(DBCursor):
                 where p.deleted_at is null
                 and p.port = %(port_num)s
                 and s.service_type = %(service_type)s
+                and not exists (
+                    select 
+                        id 
+                    from monitoring.service where
+                    where service_name = %(service_name)s
+                    and deleted_at is null 
+                )
                 """, {
                     "service_name": service_data["service_name"],
                     "service_desc": service_data["service_desc"],

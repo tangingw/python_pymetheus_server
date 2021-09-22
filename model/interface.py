@@ -14,9 +14,15 @@ class Interface(DBCursor):
                 insert into monitoring.interface(
                     interface_name, mac_address,
                     created_at, updated_at
-                ) values(
+                ) select
                     %(interface_name)s, %(mac_address)s,
                     now()::timestamp, now()::timestamp
+                where not exists (
+                    select 
+                        id 
+                    from monitoring.interface
+                    where mac_address = %(mac_address)s
+                    and deleted_at is null
                 )
                 """, {
                     "interface_name": interface_dict["interface_name"],

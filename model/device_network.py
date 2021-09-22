@@ -10,26 +10,30 @@ class DeviceNetwork(DBCursor):
 
     def add_device_network(self, device_id, network_id):
 
-        ds = self.get_device_network_id(device_id, network_id)
-
-        if not ds:
-            self.cursor.execute(
-                    f"""
-                    insert into monitoring.device_network(
-                        device_id, network_id,
-                        created_at, updated_at
-                    )
-                    values (
-                        %(device_id)s, %(network_id)s,
-                        now()::timestamp, now()::timestamp
-                    )
-                    """, {
-                        "device_id": device_id,
-                        "network_id": network_id
-                    }
-                )
-        
-            self.connection.commit()
+        self.cursor.execute(
+            f"""
+            insert into monitoring.device_network(
+                device_id, network_id,
+                created_at, updated_at
+            )
+            select
+                %(device_id)s, %(network_id)s,
+                now()::timestamp, now()::timestamp
+            where not exists(
+                select
+                    id
+                from monitoring.device_network
+                where deleted_at is null
+                and network_id = %(network_id)s
+                and device_id = %(device_id)s
+            )
+            """, {
+                "device_id": device_id,
+                "network_id": network_id
+            }
+        )
+    
+        self.connection.commit()
 
     def get_device_network_id(self, device_id, network_id):
 

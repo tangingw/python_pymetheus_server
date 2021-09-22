@@ -9,26 +9,28 @@ class NetworkPort(DBCursor):
 
     def add_network_port(self, network_id, port_id):
 
-        print(network_id, port_id)
-        np_id = self.get_network_port_id(network_id, port_id)
-
-        if not np_id:
-            self.cursor.execute(
-                f"""
-                insert into monitoring.network_port(
-                    port_id, network_id
-                    created_at, updated_at
-                )
-                values (
-                    %(port_id)s, %(network_id)s
-                )
-                """, {
-                    "port_id": port_id,
-                    "network_id": network_id
-                }
+        self.cursor.execute(
+            f"""
+            insert into monitoring.network_port(
+                port_id, network_id
+                created_at, updated_at
             )
-            
-            self.connection.commit()
+            select %(port_id)s, %(network_id)s 
+            where not exists (
+                select
+                    id
+                from monitoring.network_port
+                where deleted_at is null
+                and network_id = %(network_id)s
+                and interface_id = %(port_id)s
+            )
+            """, {
+                "port_id": port_id,
+                "network_id": network_id
+            }
+        )
+        
+        self.connection.commit()
         
     def get_network_port_id(self, network_id, port_id):
 

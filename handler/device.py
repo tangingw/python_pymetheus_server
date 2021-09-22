@@ -27,33 +27,21 @@ class DeviceRegisterHandler:
 
     def _add_device(self, device_data: dict) -> None:
 
-        #device_id = self.device.get_device_id(device_data["host_name"])
-        
-        #if not device_id:
         self.device.insert_device(device_data)
 
     def _add_network(self, network_data: dict) -> None:
 
-        network_id = self.network.get_network_id(network_data["ip_address"])
-
-        if not network_id:
-            self.network.add_network(network_data)
+        self.network.add_network(network_data)
     
     def _add_harddisk(self, host_name, harddisk_data: list) -> None:
 
         for harddisk_item in harddisk_data:
 
-            harddisk_id = self.harddisk.get_harddisk_id(harddisk_item["name"])
-
-            if not harddisk_id:
-                self.harddisk.add_hardisk(host_name, harddisk_item)
+            self.harddisk.add_hardisk(host_name, harddisk_item)
 
     def _add_port(self, port_data: list) -> None:
         #How do we deal with 1 IP with multiple ports?
-        port_id = self.port.get_port_id(port_data["port"])
-        
-        if not port_id:
-            self.port.add_port(port_data)
+        self.port.add_port(port_data)
     
     def _add_network_port(self, network_ip, port_list):
 
@@ -77,17 +65,11 @@ class DeviceRegisterHandler:
 
     def _add_service(self, port_num, service_data: dict) -> None:
 
-        service_id = self.service.get_service_id(service_data["service_name"])
-
-        if not service_id:
-            self.service.add_service(port_num, service_data)
+        self.service.add_service(port_num, service_data)
 
     def _add_interface(self, interface_data: dict) -> None:
 
-        interface_id = self.interface.get_interface_id(interface_data["mac_address"])
-
-        if not interface_id:
-            self.interface.add_interface(interface_data)
+        self.interface.add_interface(interface_data)
 
     def add_register(self, client_device_data: dict) -> None:
 

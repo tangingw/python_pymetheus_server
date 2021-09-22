@@ -23,6 +23,13 @@ class Harddisk(DBCursor):
                 from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
+                and not exists (
+                    select 
+                        id 
+                    from monitoring.harddisk
+                    where name = %(name)s
+                    and deleted_at is null
+                )
                 """, {
                     "name": harddisk_data["name"],
                     "mount_point": harddisk_data["mount_point"],

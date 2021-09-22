@@ -13,9 +13,15 @@ class Network(DBCursor):
                 insert into monitoring.network(
                     ip_address, ip_version,
                     created_at, updated_at
-                ) values(
+                ) select 
                     %(ip_address)s, %(ip_version)s,
                     now()::timestamp, now()::timestamp
+                where not exists(
+                    select 
+                        id 
+                    from monitoring.network
+                    where ip_address = %(ip_address)s
+                    and deleted_at is null
                 )
                 """, {
                     "ip_address": network_data["ip_address"],
