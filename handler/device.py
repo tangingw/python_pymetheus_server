@@ -107,6 +107,7 @@ class DeviceRegisterHandler:
         for interface, interface_data in client_device_data["network"].items():
 
             for interface_d in interface_data:
+                
                 if interface_d["mac_address"]:
 
                     if interface_d["ip_address"] == "127.0.0.1":
@@ -130,10 +131,6 @@ class DeviceRegisterHandler:
                         }
                     )
 
-                    if interface_d["ip_address"] == "127.0.0.1":
-
-                        
-                    else:
                     self.network_interface.add_network_interface(
                         self.network.get_network_id(interface_d["ip_address"])["id"], 
                         self.interface.get_interface_id(mac_address_temp)["id"]
