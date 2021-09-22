@@ -1,4 +1,4 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
 class Event(DBCursor):
@@ -33,7 +33,7 @@ class Event(DBCursor):
             }
         )
         
-        self.cursor.commit()
+        self.connection.commit()
 
     def get_event(self, monitoring_type, monitoring_type_id):
 
@@ -82,7 +82,7 @@ class MonitorType:
             }
         )
 
-        self.cursor.commit()
+        self.connection.commit()
     
     def get_monitor_type_id(self, monitor_type):
 

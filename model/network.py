@@ -1,7 +1,7 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
-class Network:
+class Network(DBCursor):
 
     def __init__(self, connection):
 
@@ -14,17 +14,16 @@ class Network:
                     ip_address, ip_version,
                     created_at, updated_at
                 ) values(
-                    %(ip_address)s, %(ip_version)
+                    %(ip_address)s, %(ip_version)s,
                     now()::timestamp, now()::timestamp
                 )
-                on conflict(ip_address) do nothing
                 """, {
                     "ip_address": network_data["ip_address"],
                     "ip_version": network_data["ip_version"],
                 }
             )
         
-        self.cursor.commit()
+        self.connection.commit()
 
     def get_network_id(self, ip_address):
 
@@ -32,7 +31,7 @@ class Network:
             f"""
             select 
                 id 
-            from monitoring.network_ip where
+            from monitoring.network
             where ip_address = %(ip_address)s
             and deleted_at is null
             """, {
@@ -58,4 +57,4 @@ class Network:
             """, {"ip_address": ip_address}
         )
 
-        self.cursor.commit()
+        self.connection.commit()

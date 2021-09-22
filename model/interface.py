@@ -1,4 +1,4 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
 class Interface(DBCursor):
@@ -15,17 +15,16 @@ class Interface(DBCursor):
                     interface_name, mac_address,
                     created_at, updated_at
                 ) values(
-                    %(interface_name)s, %(mac_address)
+                    %(interface_name)s, %(mac_address)s,
                     now()::timestamp, now()::timestamp
                 )
-                on conflict(mac_address, interface) do nothing
                 """, {
                     "interface_name": interface_dict["interface_name"],
                     "mac_address": interface_dict["mac_address"],
                 }
             )
         
-        self.cursor.commit()
+        self.connection.commit()
     
     def get_interface_id(self, mac_address):
 
@@ -33,7 +32,7 @@ class Interface(DBCursor):
             f"""
             select 
                 id 
-            from monitoring.interface where
+            from monitoring.interface
             where mac_address = %(mac_address)s
             and deleted_at is null
             """, {
@@ -58,4 +57,4 @@ class Interface(DBCursor):
             """, {"interface_name": interface_name}
         )
 
-        self.cursor.commit()
+        self.connection.commit()

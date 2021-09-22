@@ -5,7 +5,7 @@ class DBCursor:
     def __init__(self, connection):
 
         self.connection = connection
-        self.cursor = self.connection.cursor(buffered=True)
+        self.cursor = self.connection.cursor()
     
     def close(self):
 

@@ -1,4 +1,4 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
 class Harddisk(DBCursor):
@@ -17,23 +17,22 @@ class Harddisk(DBCursor):
                     created_at, updated_at
                 )
                 select 
-                    %(name)s, %(mount_point), %(fs_tye), 
-                    %(size), id,
+                    %(name)s, %(mount_point)s, %(fs_type)s, 
+                    %(size)s, id,
                     now()::timestamp, now()::timestamp
                 from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
-                on conflict(device_id) do nothing
                 """, {
                     "name": harddisk_data["name"],
                     "mount_point": harddisk_data["mount_point"],
-                    "fs_type": harddisk_data["fs_type"],
+                    "fs_type": harddisk_data["fstype"],
                     "size": harddisk_data["size"],
                     "host_name": host_name
                 }
             )
         
-        self.cursor.commit()
+        self.connection.commit()
 
     def get_harddisk_id(self, harddisk_name):
 
@@ -41,7 +40,7 @@ class Harddisk(DBCursor):
             f"""
             select 
                 id 
-            from monitoring.harddisk where
+            from monitoring.harddisk
             where name = %(name)s
             and deleted_at is null
             """, {
@@ -65,4 +64,4 @@ class Harddisk(DBCursor):
             """, {"name": harddisk_name}
         )
 
-        self.cursor.commit()
+        self.connection.commit()

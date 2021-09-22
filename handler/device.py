@@ -27,23 +27,33 @@ class DeviceRegisterHandler:
 
     def _add_device(self, device_data: dict) -> None:
 
-        self.device.insert_device(device_data)
+        device_id = self.device.get_device_id(device_data["host_name"])
+        
+        if not device_id:
+            self.device.insert_device(device_data)
 
-    def _add_network(self, network_data: list) -> None:
+    def _add_network(self, network_data: dict) -> None:
 
-        for network_item in network_data:
+        network_id = self.network.get_network_id(network_data["ip_address"])
 
-            self.network.add_network(network_item)
+        if not network_id:
+            self.network.add_network(network_data)
     
     def _add_harddisk(self, host_name, harddisk_data: list) -> None:
 
         for harddisk_item in harddisk_data:
 
-            self.harddisk.add_hardisk(host_name, harddisk_item)
+            harddisk_id = self.harddisk.get_harddisk_id(harddisk_item["name"])
+
+            if not harddisk_id:
+                self.harddisk.add_hardisk(host_name, harddisk_item)
 
     def _add_port(self, port_data: list) -> None:
         #How do we deal with 1 IP with multiple ports?
-        self.port.add_port(port_data)
+        port_id = self.port.get_port_id(port_data["port"])
+        
+        if not port_id:
+            self.port.add_port(port_data)
     
     def _add_network_port(self, network_ip, port_list):
 
@@ -67,66 +77,86 @@ class DeviceRegisterHandler:
 
     def _add_service(self, port_num, service_data: dict) -> None:
 
-        self.service.add_service(port_num, service_data)
+        service_id = self.service.get_service_id(service_data["service_name"])
+
+        if not service_id:
+            self.service.add_service(port_num, service_data)
 
     def _add_interface(self, interface_data: dict) -> None:
 
-        self.interface.add_interface(interface_data)
+        interface_id = self.interface.get_interface_id(interface_data["mac_address"])
+
+        if not interface_id:
+            self.interface.add_interface(interface_data)
 
     def add_register(self, client_device_data: dict) -> None:
 
         host_name = client_device_data["host_name"]
+
         self._add_device(
             {
                 key: client_device_data[key]
                 for key in ["host_name", "cpu", "memory", "os_install"]
             }
         )
-        
-        self._add_harddisk(
-            host_name, client_device_data["harddisk"]
-        )
+
+        self._add_harddisk(host_name, client_device_data["harddisc"])
 
         mac_address_temp = None
 
         for interface, interface_data in client_device_data["network"].items():
 
-            if interface_data["mac_address"]:
+            for interface_d in interface_data:
+                if interface_d["mac_address"]:
 
-                mac_address_temp = interface["mac_address"]
-                self._add_interface(
-                    {
-                        "interface_name": interface,
-                        "mac_address": interface_data["mac_address"]
-                    }
-                )
+                    if interface_d["ip_address"] == "127.0.0.1":
+                        mac_address_temp = "00:00:00:00:00:00"
 
-            else:
-                self._add_network(
-                    {
-                        "ip_address": interface_data["ip_address"],
-                        "ip_version": interface_data["ip_type"][-1]
-                    }
-                )
+                    else:
+                        mac_address_temp = interface_d["mac_address"]
+                    
+                    self._add_interface(
+                        {
+                            "interface_name": interface,
+                            "mac_address": interface_d["mac_address"]
+                        }
+                    )
 
-                self.network_interface.add_network_interface(
-                    interface_data["ip_address"], mac_address_temp
-                )
+                else:
+                    self._add_network(
+                        {
+                            "ip_address": interface_d["ip_address"],
+                            "ip_version": interface_d["ip_type"][-1]
+                        }
+                    )
 
-                self.device_network.add_device_network(
-                    interface_data["ip_address"], host_name
-                )
+                    if interface_d["ip_address"] == "127.0.0.1":
+
+                        
+                    else:
+                    self.network_interface.add_network_interface(
+                        self.network.get_network_id(interface_d["ip_address"])["id"], 
+                        self.interface.get_interface_id(mac_address_temp)["id"]
+                    )
+
+                    self.device_network.add_device_network(
+                        self.device.get_device_id(host_name)["id"],
+                        self.network.get_network_id(interface_d["ip_address"])["id"], 
+                    )
 
         for port_data in client_device_data["ports"]:
-
             self._add_port(port_data)
             self.network_port.add_network_port(
-                port_data["ip_address"], port_data["port"]
+                self.network.get_network_id(port_data["ip_address"])["id"], 
+                self.port.get_port_id(port_data["port"])["id"]
             )
 
         for service_data in client_device_data["services"]:
             self._add_service(service_data["port"], service_data)
-            self.device_service.add_device_service(host_name, service_data["service_name"])
+            self.device_service.add_device_service(
+                self.device.get_device_id(host_name), 
+                self.service.get_service_id(service_data["service_name"])
+            )
 
     def get_device(self, host_name):
 

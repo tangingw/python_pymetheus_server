@@ -1,4 +1,4 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
 class Service(DBCursor):
@@ -24,7 +24,6 @@ class Service(DBCursor):
                 where p.deleted_at is null
                 and p.port = %(port_num)s
                 and s.service_type = %(service_type)s
-                on conflict(service_url, name) do nothing
                 """, {
                     "service_name": service_data["service_name"],
                     "service_desc": service_data["service_desc"],
@@ -34,7 +33,7 @@ class Service(DBCursor):
                 }
             )
         
-        self.cursor.commit()
+        self.connection.commit()
 
     def get_service_id(self, service_name):
 
@@ -66,8 +65,7 @@ class Service(DBCursor):
             """, {"service_name": service_name}
         )
 
-        self.cursor.commit()
-
+        self.connection.commit()
 
 class ServiceType(DBCursor):
 
@@ -86,7 +84,7 @@ class ServiceType(DBCursor):
             }
         )
 
-        self.cursor.commit()
+        self.connection.commit()
     
     def get_servicetype_id(self, service_type):
 

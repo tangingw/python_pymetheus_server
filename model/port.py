@@ -1,4 +1,4 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
 class Port(DBCursor):
@@ -13,28 +13,17 @@ class Port(DBCursor):
                 insert into monitoring.port(
                     port, port_desc,
                     created_at, updated_at
-<<<<<<< HEAD
                 ) values(
                     %(port)s, %(port_desc)s,
                     now()::timestamp, now()::timestamp
-=======
-                ) values (
-                    %(port)s, %(port_desc)s,
-                    now()::timestamp, now()::timestamp   
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
                 )
-                on conflict(port) do nothing
                 """, {
                     "port": port_data["port"],
-<<<<<<< HEAD
                     "port_desc": port_data["port_desc"]
-=======
-                    "port_desc": port_data["port_desc"],
->>>>>>> 8a15613127432a44475a4d59a00acd799f8bc1de
                 }
             )
         
-        self.cursor.commit()
+        self.connection.commit()
 
     def get_port_id(self, port_num):
 
@@ -67,4 +56,4 @@ class Port(DBCursor):
             """, {"port_num": port_num}
         )
 
-        self.cursor.commit()
+        self.connection.commit()

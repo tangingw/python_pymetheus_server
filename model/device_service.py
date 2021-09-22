@@ -1,5 +1,5 @@
 
-from template import DBCursor
+from model.template import DBCursor
 
 
 class DeviceService(DBCursor):
@@ -9,24 +9,51 @@ class DeviceService(DBCursor):
         super().__init__(connection=connection)
 
     def add_device_service(self, device_id, service_id):
-        self.cursor.execute(
-                f"""
-                insert into monitoring.device_service(
-                    service_id, device_id,
-                    created_at, updated_at
+
+        ds_id = self.get_device_service_id(device_id, service_id)
+
+        if not ds_id:
+            self.cursor.execute(
+                    f"""
+                    insert into monitoring.device_service(
+                        service_id, device_id,
+                        created_at, updated_at
+                    )
+                    values (
+                        %(service_id)s, %(device_id)s,
+                        now()::timestamp, now()::timestamp
+                    )
+                    """, {
+                        "service_id": service_id,
+                        "device_id": device_id
+                    }
                 )
-                values (
-                    %(service_id)s, %(device_id)s,
-                    now()::timestamp, now()::timestamp
-                ) on conflict(service_id, device_id) do nothing
-                """, {
-                    "service_id": service_id,
-                    "device_id": device_id
-                }
-            )
+        
+            self.connection.commit()
     
-        self.cursor.commit()
+    def get_device_service_id(self, device_id, service_id):
+
+        self.cursor.execute(
+            f"""
+            select
+                id
+            from monitoring.device_service
+            where deleted_at is null
+            and device_id = %(device_id)s
+            and service_id = %(service_id)s
+            """, {
+                "device_id": device_id,
+                "service_id": service_id
+            }
+        )
     
+        header = [x[0] for x in self.cursor.description]
+        result = self.cursor.fetchone()
+
+        return {
+            header[i]: r for i, r in enumerate(result) 
+        } if result else None
+
     def delete_service(self, service_name, host_name):
 
         self.cursor.execute(
@@ -42,5 +69,5 @@ class DeviceService(DBCursor):
             }
         )
 
-        self.cursor.commit()
+        self.connection.commit()
     

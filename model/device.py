@@ -1,4 +1,4 @@
-from template import DBCursor
+from model.template import DBCursor
 
 
 class Device(DBCursor):
@@ -17,9 +17,9 @@ class Device(DBCursor):
                 updated_at
             ) values (
                 %(host_name)s, %(cpu)s, %(memory)s,
-                %(os_install), now()::timestamp,
+                %(os_install)s, now()::timestamp,
                 now()::timestamp
-            ) on conflict (host_name) do nothing
+            )
             """, {
                 "host_name": device_data["host_name"],
                 "cpu": device_data["cpu"], "memory": device_data["memory"],
@@ -27,7 +27,7 @@ class Device(DBCursor):
             }
         )
     
-        self.cursor.commit()
+        self.connection.commit()
 
     def get_device_id(self, host_name):
 
@@ -35,7 +35,7 @@ class Device(DBCursor):
             f"""
             select 
                 id 
-            from monitoring.device where
+            from monitoring.device
             where host_name = %(host_name)s
             and deleted_at is null
             """, {
@@ -59,4 +59,4 @@ class Device(DBCursor):
             """, {"host_name": host_name}
         )
 
-        self.cursor.commit()
+        self.connection.commit()
