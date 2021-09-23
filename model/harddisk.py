@@ -19,7 +19,8 @@ class Harddisk(DBCursor):
                 select 
                     %(name)s, %(mount_point)s, %(fs_type)s, 
                     %(size)s, id,
-                    now()::timestamp, now()::timestamp
+                    (now() at time zone 'utc')::timestamp, 
+                    (now() at time zone 'utc')::timestamp
                 from monitoring.device
                 where deleted_at is null
                 and host_name = %(host_name)s
@@ -66,7 +67,8 @@ class Harddisk(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.harddisk set deleted_at = (now()::timestamp)
+            update monitoring.harddisk set 
+                deleted_at = ((now() at time zone 'utc')::timestamp)
             where name = %(name)s and deleted_at is null;
             """, {"name": harddisk_name}
         )

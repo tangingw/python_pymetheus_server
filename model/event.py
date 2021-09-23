@@ -21,7 +21,7 @@ class Event(DBCursor):
                 %(event_value)s, %(event_message)s,
                 %(event_status)s, id, %(monitoring_type)s, 
                 %(monitoring_type_id)s,
-                now()::timestamp
+                (now() at time zone 'utc')::timestamp
             from monitoring.event_type
             where type_name = %(event_type)s
             """, {

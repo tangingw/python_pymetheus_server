@@ -17,8 +17,8 @@ class Device(DBCursor):
                 updated_at
             ) select
                 %(host_name)s, %(cpu)s, %(memory)s,
-                %(os_install)s, now()::timestamp,
-                now()::timestamp
+                %(os_install)s, (now() at time zone 'utc')::timestamp,
+                (now() at time zone 'utc')::timestamp
             from monitoring.device where not exists (
                 select id from monitoring.device
                 where deleted_at is null

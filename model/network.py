@@ -15,7 +15,8 @@ class Network(DBCursor):
                     created_at, updated_at
                 ) select 
                     %(ip_address)s, %(ip_version)s,
-                    now()::timestamp, now()::timestamp
+                    (now() at time zone 'utc')::timestamp, 
+                    (now() at time zone 'utc')::timestamp
                 where not exists(
                     select 
                         id 
@@ -56,7 +57,7 @@ class Network(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.network_ip set deleted_at = (now()::timestamp)
+            update monitoring.network_ip set deleted_at = ((now() at time zone 'utc')::timestamp)
             where ip_address = %(ip_address)s
             and deleted_at is null
             ;

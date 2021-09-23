@@ -18,7 +18,7 @@ class DeviceService(DBCursor):
                 )
                 select
                     %(service_id)s, %(device_id)s,
-                    now()::timestamp, now()::timestamp
+                    (now() at time zone 'utc')::timestamp, (now() at time zone 'utc')::timestamp
                 where not exists (
                     select
                         id
@@ -62,7 +62,8 @@ class DeviceService(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.device_service set deleted_at = (now()::timestamp)
+            update monitoring.device_service 
+                set deleted_at = ((now() at time zone 'utc')::timestamp)
             where 
                 service_id = %(service_id)s 
             and device_id = %(device_id)s

@@ -18,7 +18,8 @@ class Service(DBCursor):
                 select 
                     %(service_name)s, %(service_desc)s, 
                     p.id, %(service_url)s, s.id,
-                    now()::timestamp, now()::timestamp
+                    (now() at time zone 'utc')::timestamp, 
+                    (now() at time zone 'utc')::timestamp
                 from monitoring.port p join service_type s
                 on p.service_type_id = s.id
                 where p.deleted_at is null
@@ -67,7 +68,7 @@ class Service(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.service set deleted_at = (now()::timestamp)
+            update monitoring.service set deleted_at = ((now() at time zone 'utc')::timestamp)
             where service_name = %(service_name)s and deleted_at is null;
             """, {"service_name": service_name}
         )

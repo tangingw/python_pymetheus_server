@@ -15,7 +15,10 @@ class NetworkPort(DBCursor):
                 port_id, network_id
                 created_at, updated_at
             )
-            select %(port_id)s, %(network_id)s 
+            select 
+                %(port_id)s, %(network_id)s,
+                (now() at time zone 'utc')::timestamp,
+                (now() at time zone 'utc')::timestamp
             where not exists (
                 select
                     id
@@ -59,7 +62,7 @@ class NetworkPort(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.network_port set deleted_at = (now()::timestamp)
+            update monitoring.network_port set deleted_at = ((now() at time zone 'utc')::timestamp)
             where port_id = %(port_id)s
             and network_id = %(network_id)s
             and deleted_at is null;

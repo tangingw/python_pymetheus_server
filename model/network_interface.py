@@ -19,7 +19,8 @@ class NetworkInterface(DBCursor):
             )
             select
                 %(network_id)s, %(interface_id)s,
-                now()::timestamp, now()::timestamp
+                (now() at time zone 'utc')::timestamp, 
+                (now() at time zone 'utc')::timestamp
             where not exists(
                 select
                     id

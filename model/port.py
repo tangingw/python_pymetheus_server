@@ -15,7 +15,8 @@ class Port(DBCursor):
                     created_at, updated_at
                 ) select
                     %(port)s, %(port_desc)s,
-                    now()::timestamp, now()::timestamp
+                    (now() at time zone 'utc')::timestamp, 
+                    (now() at time zone 'utc')::timestamp
                 where not exists(
                     select 
                         id 
@@ -56,7 +57,7 @@ class Port(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.port set deleted_at = (now()::timestamp)
+            update monitoring.port set deleted_at = ((now() at time zone 'utc')::timestamp)
             where port = %(port_num)s
             and deleted_at is null;
             """, {"port_num": port_num}

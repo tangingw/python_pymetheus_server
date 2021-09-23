@@ -16,7 +16,8 @@ class Interface(DBCursor):
                     created_at, updated_at
                 ) select
                     %(interface_name)s, %(mac_address)s,
-                    now()::timestamp, now()::timestamp
+                    (now() at time zone 'utc')::timestamp, 
+                    (now() at time zone 'utc')::timestamp
                 where not exists (
                     select 
                         id 
@@ -57,7 +58,7 @@ class Interface(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.interface set deleted_at = (now()::timestamp)
+            update monitoring.interface set deleted_at = ((now() at time zone 'utc')::timestamp)
             where interface_name = %(interface_name)s
             and deleted_at is null;
             """, {"interface_name": interface_name}

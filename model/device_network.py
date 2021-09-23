@@ -18,7 +18,7 @@ class DeviceNetwork(DBCursor):
             )
             select
                 %(device_id)s, %(network_id)s,
-                now()::timestamp, now()::timestamp
+                (now() at time zone 'utc')::timestamp, (now() at time zone 'utc')::timestamp
             where not exists(
                 select
                     id
@@ -63,7 +63,8 @@ class DeviceNetwork(DBCursor):
 
         self.cursor.execute(
             f"""
-            update monitoring.network_service set deleted_at = (now()::timestamp)
+            update monitoring.network_service set 
+                deleted_at = ((now() at time zone 'utc')::timestamp)
             where 
                 device_id = %(device_id)s
             and network_id = %(network_id)s 
