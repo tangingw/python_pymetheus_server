@@ -20,8 +20,8 @@ class Port(DBCursor):
                 where not exists(
                     select 
                         id 
-                    from monitoring.port where
-                    where port = %(port_num)s
+                    from monitoring.port
+                    where port = %(port)s
                     and deleted_at is null
                 )
                 """, {
@@ -38,7 +38,7 @@ class Port(DBCursor):
             f"""
             select 
                 id 
-            from monitoring.port where
+            from monitoring.port
             where port = %(port_num)s
             and deleted_at is null
             """, {

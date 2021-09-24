@@ -12,7 +12,7 @@ class NetworkPort(DBCursor):
         self.cursor.execute(
             f"""
             insert into monitoring.network_port(
-                port_id, network_id
+                port_id, network_id,
                 created_at, updated_at
             )
             select 
@@ -25,7 +25,7 @@ class NetworkPort(DBCursor):
                 from monitoring.network_port
                 where deleted_at is null
                 and network_id = %(network_id)s
-                and interface_id = %(port_id)s
+                and port_id = %(port_id)s
             )
             """, {
                 "port_id": port_id,

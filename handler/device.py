@@ -42,7 +42,7 @@ class DeviceRegisterHandler:
     def _add_ports(self, ports_data: list) -> None:
         #How do we deal with 1 IP with multiple ports?
         for port_data in ports_data:
-            self._add_port(port_data)
+            self.port.add_port(port_data)
             self.network_port.add_network_port(
                 self.network.get_network_id(port_data["ip_address"])["id"], 
                 self.port.get_port_id(port_data["port"])["id"]
@@ -51,7 +51,7 @@ class DeviceRegisterHandler:
     def _add_services(self, host_name, services_data: dict) -> None:
 
         for service_data in services_data:
-            self._add_service(service_data["port"], service_data)
+            self.service.add_service(service_data)
             self.device_service.add_device_service(
                 self.device.get_device_id(host_name)["id"], 
                 self.service.get_service_id(service_data["service_name"])["id"]

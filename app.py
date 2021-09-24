@@ -84,6 +84,7 @@ def collect_event():
             }
         )
         
+        db_conn.close()
         return jsonify(
             {
                 "status": 200,

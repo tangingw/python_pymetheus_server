@@ -1,13 +1,18 @@
 from model.template import DBCursor
-
+from model.port import Port
 
 class Service(DBCursor):
 
     def __init__(self, connection):
 
         super().__init__(connection=connection)
+        self.service_type = ServiceType(self.connection)
+        self.port = Port(self.connection)
 
-    def add_service(self, port_num, service_data):
+    def add_service(self, service_data):
+        
+        self.service_type.add_service_type(service_data["service_type"])
+
         self.cursor.execute(
                 f"""
                 insert into monitoring.service(
@@ -17,19 +22,16 @@ class Service(DBCursor):
                 )
                 select 
                     %(service_name)s, %(service_desc)s, 
-                    p.id, %(service_url)s, s.id,
+                    %(service_port)s, %(service_url)s, s.id,
                     (now() at time zone 'utc')::timestamp, 
                     (now() at time zone 'utc')::timestamp
-                from monitoring.port p join service_type s
-                on p.service_type_id = s.id
-                where p.deleted_at is null
-                and p.port = %(port_num)s
-                and s.service_type = %(service_type)s
+                from monitoring.service_type s
+                where s.service_type = %(service_type)s
                 and not exists (
                     select 
                         id 
-                    from monitoring.service where
-                    where service_name = %(service_name)s
+                    from monitoring.service
+                    where name = %(service_name)s
                     and deleted_at is null 
                 )
                 """, {
@@ -37,7 +39,7 @@ class Service(DBCursor):
                     "service_desc": service_data["service_desc"],
                     "service_url": service_data["service_url"],
                     "service_type": service_data["service_type"],
-                    "port_num": port_num
+                    "service_port": self.port.get_port_id(service_data["service_port"])["id"]
                 }
             )
         
@@ -49,8 +51,8 @@ class Service(DBCursor):
             f"""
             select 
                 id 
-            from monitoring.service where
-            where service_name = %(service_name)s
+            from monitoring.service
+            where name = %(service_name)s
             and deleted_at is null
             """, {
                 "service_name": service_name
@@ -81,12 +83,18 @@ class ServiceType(DBCursor):
 
         super().__init__(connection=connection)
     
-    def add_service(self, service_type):
+    def add_service_type(self, service_type):
 
         self.cursor.execute(
             f"""
-            insert into service_type(service_type)
-            values (%(service_type)s)
+            insert into monitoring.service_type(service_type)
+            select %(service_type)s
+            where not exists(
+                select 
+                    id 
+                from monitoring.service_type
+                where service_type = %(service_type)s
+            )
             """, {
                 "service_type": service_type
             }
@@ -100,7 +108,7 @@ class ServiceType(DBCursor):
             f"""
             select 
                 id 
-            from monitoring.service_type where
+            from monitoring.service_type
             where service_type = %(service_name)s
             and deleted_at is null
             """, {
