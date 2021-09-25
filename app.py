@@ -2,11 +2,19 @@ from flask import Flask, request
 from flask import jsonify, abort
 from handler.device import DeviceRegisterHandler
 from handler.event import EventHandler
+from handler.heartbeat import HeartBeatHandler
 from db.connector import get_connection
 
 
 app = Flask(__name__)
 
+
+@app.errorhandler(504)
+def return_forbidden_page(error):
+
+    return jsonify(
+        status=504, message="Forbidden Data"
+    ), 504
 
 @app.errorhandler(403)
 def return_forbidden_page(error):
@@ -35,7 +43,6 @@ def return_index():
 
 
 @app.route("/register", methods=["GET", "POST"])
-@app.route("/register/<device_name>")
 def check_device_register(device_name=None):
 
     db_conn = get_connection("config")
@@ -47,19 +54,6 @@ def check_device_register(device_name=None):
         register_handler.add_register(request.get_json())
         db_conn.close()       
         return jsonify(request.get_json())
-    
-    if device_name:
-        device_id = register_handler.get_device(device_name)
-
-        return jsonify(
-            {
-                "status_code": 200,
-                "message": {
-                    "device_name": device_name,
-                    "device_id": device_id
-                }
-            }
-        )
     
     abort(404)
 
@@ -91,6 +85,40 @@ def collect_event():
                 "message": "Event Received"
             }
         )
+
+    abort(403)
+
+
+@app.route("/heartbeat", methods=["GET", "POST", "PUT"])
+def add_heartbeat():
+
+    db_conn = get_connection("config")
+    heartbeat_handler = HeartBeatHandler(db_conn)
+    
+    if request.is_json:
+
+        device_name = request.get_json()["device_name"]
+
+        if request.method == "POST":
+
+            heartbeat_handler.add_heartbeat(device_name)
+            return jsonify(
+            {
+                "status": 200,
+                "message": "Heartbeat Received"
+            }
+        )
+        elif request.method == "PUT":
+
+            heartbeat_handler.update_heartbeat(device_name)
+            return jsonify(
+            {
+                "status": 200,
+                "message": "Heartbeat Updated"
+            }
+        )
+
+        abort(504)
 
     abort(403)
 

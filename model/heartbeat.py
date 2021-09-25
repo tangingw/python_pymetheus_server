@@ -6,7 +6,7 @@ class HeartBeat(DBCursor):
     def __init__(self, connection):
         super().__init__(connection)
     
-    def add_heart_beat(self, device_name):
+    def add_heartbeat(self, device_name):
 
         self.cursor.execute(
             f"""
@@ -51,6 +51,10 @@ class HeartBeat(DBCursor):
                 where
                     host_name = %(host_name)s
                 and deleted_at is null
+                and date_part(
+                    'hour', 
+                    (now() at time zone 'utc')::timestamp - last_updated
+                ) <= 1
             )
             """, {
                 "host_name": device_name
@@ -84,3 +88,30 @@ class HeartBeat(DBCursor):
         )
 
         self.connection.commit()
+
+    def get_heartbeat_device(self, device_name):
+
+        self.cursor.execute(
+            f"""
+            select 
+                device_id
+            from monitoring.device_heartbeat
+            where device_id = (
+                select
+                    id
+                from monitoring.device
+                where
+                    host_name = %(host_name)s
+                and deleted_at is null
+            )
+            """, {
+                "host_name": device_name
+            }
+        )
+
+        header = [x[0] for x in self.cursor.description]
+        result = self.cursor.fetchone()
+
+        return {
+            header[i]: r for i, r in enumerate(result) 
+        } if result else None
