@@ -51,9 +51,9 @@ class HeartBeat(DBCursor):
                 where
                     host_name = %(host_name)s
                 and deleted_at is null
-                and date_part(
-                    'hour', 
-                    (now() at time zone 'utc')::timestamp - last_updated
+                and extract(
+                    hour from
+                    ((now() at time zone 'utc')::timestamp - last_updated)
                 ) <= 1
             )
             """, {
